@@ -1,4 +1,6 @@
 import firebase from 'firebase'
+import _ from 'lodash'
+
 var config = {
   apiKey: 'AIzaSyCV75QBr8hleUZ2rQ-uOx1NyE8q2Rn1uXo',
   authDomain: 'cf-excel.firebaseapp.com',
@@ -49,21 +51,9 @@ db.database().ref('/cells').on('child_changed', function (childSnapshot, prevChi
   if (!cell.content) {
     cell.content = ''
   }
-  console.log('cell', cell)
-  if (data.cells[cell.row].$set) {
-    data.cells[cell.row].$set(cell.col, cell)
-    return
-  }
-  data.cells[cell.row][cell.col] = cell
-  // console.log('child value', cols)
-  // for (var i = 0; i < cols.length; i++) {
-  //   let cell = cols[i]
-  //   if (data.rows[cell.row].$set) {
-  //     data.rows[cell.row].$set(cell.col, cell)
-  //     continue
-  //   }
-  //   data.rows[cell.row][cell.col] = cell
-  // }
+  console.log('Before assign:', (new Date()).getTime())
+  _.assign(data.cells[cell.row][cell.col], cell)
+  console.log('After assign:', (new Date()).getTime())
 })
 
 // Generate the data
