@@ -39,7 +39,6 @@ db.database().ref('/cells').once('value', function (snapshot) {
       }
       data.cells[cell.row].$set(cell.col, cell)
     }
-    console.log('completed')
   } catch (ex) {
     console.error(ex)
     console.error(cell)
@@ -76,11 +75,16 @@ db.database().ref('/cells').on('child_changed', function (childSnapshot, prevChi
 export default data
 
 export function isFormula (content) {
-  try {
-    return (content[0] === '=')
-  } catch (ex) {
+  if ((typeof content) !== 'string') {
     return false
   }
+  if (content.length === 0) {
+    return false
+  }
+  if (content[0] === '=') {
+    return true
+  }
+  return false
 }
 
 function literalToOffset (cellName) {
@@ -127,10 +131,11 @@ function applyFormula (worksheet, formula) {
     var params = tokens[2]
     var interval = params.split(':')
     var cells = getCellsRect(worksheet, interval[0], interval[1])
+    var cellsLength = cells.length
 
     if (name === 'SUM') {
       let sum = 0
-      for (let i = 0; i < cells.length; i++) {
+      for (let i = 0; i < cellsLength; i++) {
         let cell = cells[i]
         sum += (getValue(worksheet, cell.row, cell.col) * 1)
       }
@@ -139,7 +144,7 @@ function applyFormula (worksheet, formula) {
 
     if (name === 'MAX') {
       let max = Number.NEGATIVE_INFINITY
-      for (let i = 0; i < cells.length; i++) {
+      for (let i = 0; i < cellsLength; i++) {
         let cell = cells[i]
         let value = getValue(worksheet, cell.row, cell.col) * 1
         if (value > max) {
@@ -151,7 +156,7 @@ function applyFormula (worksheet, formula) {
 
     if (name === 'MIN') {
       let min = Number.POSITIVE_INFINITY
-      for (let i = 0; i < cells.length; i++) {
+      for (let i = 0; i < cellsLength; i++) {
         let cell = cells[i]
         let value = getValue(worksheet, cell.row, cell.col) * 1
         if (value < min) {
@@ -159,6 +164,16 @@ function applyFormula (worksheet, formula) {
         }
       }
       return min
+    }
+
+    if (name === 'AVERAGE') {
+      let sum = 0
+      for (let i = 0; i < cellsLength; i++) {
+        let cell = cells[i]
+        sum += (getValue(worksheet, cell.row, cell.col) * 1)
+      }
+      let avg = (sum / cellsLength)
+      return avg
     }
 
     return 'UNDEF'

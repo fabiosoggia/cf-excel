@@ -3,9 +3,10 @@
     <h1>CF Excel</h1>
     <p>This is a test excel-like app. Supported formulas:</p>
     <ul>
-      <li>= SUM(B5:C6)</li>
-      <li>= MIN(B5:C6)</li>
-      <li>= MAX(B5:C6)</li>
+      <li>= <span class="function-name">SUM</span><span class="function-arguments">(X1:Y9)</span></li>
+      <li>= <span class="function-name">MIN</span><span class="function-arguments">(X1:Y9)</span></li>
+      <li>= <span class="function-name">MAX</span><span class="function-arguments">(X1:Y9)</span></li>
+      <li>= <span class="function-name">AVERAGE</span><span class="function-arguments">(X1:Y9)</span></li>
     </ul>
     <worksheet :data="data"></worksheet>
   </div>
@@ -52,5 +53,14 @@ ul {
 .logo {
   width: 100px;
   height: 100px
+}
+</style>
+<style scoped>
+.function-name {
+    color: #555;
+}
+
+.function-arguments {
+    color: #aaa;
 }
 </style>
